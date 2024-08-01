@@ -1,0 +1,70 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Recent Searches</title>
+</head>
+<body>
+    <h1>Recent Searches</h1>
+    <div class="recent-list" id="recentList"></div>
+    <script>
+        function displayRecentCities() {
+        const recentList = document.getElementById('recentList')
+       recentList.innerHTML = ""; //listeyi innerhtml aracılığıyla temizledim
+       
+       if(!recentSearches) {   // burda ise recentSearches bir JSON dizisi olarak tanımlysa dizi parse edilir yoksa hata olarak error yazılır ve dizi boş ayarlanır
+        recentSearches = [];
+       } else {
+        try {
+            recentSearches = JSON.parse(recentSearches);
+        } catch (error) {
+            console.log("hata", error);
+            recentSearches = [];
+        }
+       }
+       
+       recentSearches.forEach(cityJSON => {
+        let cityData;
+        try {
+            cityData = JSON.parse(cityJSON);
+        } catch (error) {
+            console.log("bir şehir verisi parse edilemedi", error);
+            return;
+        }
+        let cityCard = document.createElement("div");
+        cityCard.classList.add("card");
+
+        let weatherIconSrc = "";
+        if(cityData.weatherCondition === ("Clouds")) {
+            weatherIconSrc = "images/clouds.png";
+        } else if(cityData.weatherCondition === ("Clear")) {
+            weatherIconSrc = "images/clear.png";
+        } else if(cityData.weatherCondition === ("Rain")) {
+            weatherIconSrc = "images/rain.png";
+        } else if(cityData.weatherCondition === ("Drizzle")) {
+            weatherIconSrc = "images/drizzle.png";
+        } else if(cityData.weatherCondition ===("Mist")) {
+            weatherIconSrc = "images/mist.png";
+        }
+        cityCard.innerHTML = `
+        <img src="${weatherIconSrc}" class="recent-weather-icon">
+        <div class="city-details">
+        <h3>${cityData.city}</h3>
+        <p>${cityData.temp}</p>
+        <p>${cityData.wind}</p>
+        <p>${cityData.humidity}</p>
+        </div>
+        `;
+        recentList.appendChild(cityCard); // oluşturduğum city listi asıl liste olan recentliste ekledim.
+       })
+       // bu fonksiyonda ise ilk başta listeyi temizler ve recentSearches dizisindeki herbir şehir için bir liste ögesi ekler ve bu eklediği ögeleri recentListe ekler
+       
+    }
+
+    document.addEventListener("DOMContentLoaded", displayRecentCities);
+    </script>
+    
+</body>
+</html>
